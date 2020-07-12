@@ -444,7 +444,7 @@ D_t_group_psu_wor = (h^2)*(1-n_group/h)*(sum((ti_group_psu_wor[index_group_wor]-
 D_t_group_psu_wor
 D_X_group_psu_wor = D_t_group_psu_wor / (M^2)
 D_X_group_psu_wor
-sqrt(D_X_group_psu_wor) #???
+sqrt(D_X_group_psu_wor)
 
 # Interval poverenja
 alpha = 1-0.90
@@ -587,7 +587,7 @@ index_syg = sample(h, n_hh, replace=F, prob=pi)
 index_syg
 t_syg = sum(ti_group_kol[index_syg]/pii2[index_syg])
 t_syg
-X_syg = t_syg / N_pop
+X_syg = t_syg / M
 X_syg
 
 D_t_ht_ocena_syg = 0
