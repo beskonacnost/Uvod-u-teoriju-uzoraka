@@ -21,12 +21,25 @@ data_filtered = list()
 Mi = c()
 str_dates = list()
 landmark_data = list()
+
+# criteria
+full_time = list()
+part_time = list()
+
+# criteria
+operational = list()
+administrative_clerical = list()
+technical_engineering = list()
+professional = list()
+managerial = list()
+executive = list()
+
 for(i in 1:length(data)){
   data_filtered[[i]] = subset(data[[i]], select = -c(Authority.Name, Last.Name, Middle.Initial,
                                                Has.Employees,First.Name,Title, Exempt.Indicator,
                                                Department, Paid.By.Another.Entity, Paid.by.State.or.Local.Government,
                                                Base.Annualized.Salary, Overtime.Paid, Performance.Bonus, Extra.Pay,
-                                               Other.Compensation))
+                                               Other.Compensation, Actual.Salary.Paid))
   data_filtered[[i]] = na.exclude(filter(data_filtered[[i]], (data_filtered[[i]])$Total.Compensation > 0))
   #Added new column, ID of instance in dataframe
   data_filtered[[i]]$id = seq.int(nrow(data_filtered[[i]]))
@@ -37,17 +50,107 @@ for(i in 1:length(data)){
   #by years
   str_dates[[i]] = as.character(data_filtered[[i]]$Fiscal.Year.End.Date)
   landmark_data[[i]] = data_filtered[[i]]$Total.Compensation
+  
+  full_time[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Pay.Type == "FT")$id
+  part_time[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Pay.Type == "PT")$id
+  
+  operational[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Operational")$id
+  administrative_clerical[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Administrative and Clerical")$id
+  technical_engineering[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Technical and Engineering")$id
+  professional[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Professional")$id
+  managerial[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Managerial")$id
+  executive[[i]] = filter(data_filtered[[i]], data_filtered[[i]]$Group == "Executive")$id
 }
+ft_len = unlist(lapply(full_time, length))
+ft_len
+pt_len = unlist(lapply(part_time, length))
+pt_len
+ft = length(unlist(full_time))
+pt = length(unlist(part_time))
+ft
+pt
+
+oper_len = unlist(lapply(operational, length))
+oper_len
+admin_cler_len = unlist(lapply(administrative_clerical, length))
+techn_eng_len = unlist(lapply(technical_engineering, length))
+prof_len = unlist(lapply(professional, length))
+manag_len = unlist(lapply(managerial, length))
+exe_len = unlist(lapply(executive, length))
+
+oper = length(unlist(operational))
+admin_cler = length(unlist(administrative_clerical))
+techn_eng = length(unlist(technical_engineering))
+prof = length(unlist(professional))
+manag = length(unlist(managerial))
+exe = length(unlist(executive))
+
 lendmark_data = unlist(landmark_data)
 N_pop = length(lendmark_data)
 N_pop # filtered
 N_no_filtered - N_pop # lost in filter process
 Mi
 sum(Mi) == N_pop
+N_pop == pt + ft
 
 View(data_filtered[[1]])
 col_num = length(data_filtered[[1]])
 col_num
+
+# Analyses of dataset
+slices <- Mi
+lbls <- c("Industrial\nDevelopment\nAgencies", "Local Authorities", "Local Development\nCorporations", "State Authorities")
+pie(slices, cex=0.8,  radius = 0.8, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Sections")
+
+slices <- c(ft, pt)
+lbls <- c("Full time", "Part time")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Pay type")
+
+slices <- c(length(full_time[[1]]), length(part_time[[1]]))
+lbls <- c("Full time", "Part time")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Pay type/Industrial Development Agencies")
+
+slices <- c(length(full_time[[2]]), length(part_time[[2]]))
+lbls <- c("Full time", "Part time")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Pay type/Local Authorities")
+
+slices <- c(length(full_time[[3]]), length(part_time[[3]]))
+lbls <- c("Full time", "Part time")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Pay type/Local Development Corporations")
+
+slices <- c(length(full_time[[4]]), length(part_time[[4]]))
+lbls <- c("Full time", "Part time")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Pay type/State Authorities")
+
+#counts <- table(ft_len, pt_len)
+#barplot(counts, main="Pay type distribution",
+#        xlab="Number of employees", col=c("darkblue","red"),
+#        legend = rownames(counts), beside=TRUE)
+
+slices <- c(oper, admin_cler, techn_eng, prof, manag, exe)
+lbls <- c("Operational", "Administrative\nand\nClerical", "Technical\nand\nEngineering", "Professional", 
+          "Managerial", "Executive")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Group")
+
+slices <- c(oper_len[1], admin_cler_len[1], techn_eng_len[1], prof_len[1], manag_len[1], exe_len[1])
+lbls <- c("Operational", "Administrative\nand\nClerical", "Technical\nand\nEngineering", "Professional", 
+          "Managerial", "Executive")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Group/Industrial Development Agencies")
+
+slices <- c(oper_len[2], admin_cler_len[2], techn_eng_len[2], prof_len[2], manag_len[2], exe_len[2])
+lbls <- c("Operational", "Administrative\nand\nClerical", "Technical\nand\nEngineering", "Professional", 
+          "Managerial", "Executive")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Group/Local Authorities")
+
+slices <- c(oper_len[3], admin_cler_len[3], techn_eng_len[3], prof_len[3], manag_len[3], exe_len[3])
+lbls <- c("Operational", "Administrative\nand\nClerical", "Technical\nand\nEngineering", "Professional", 
+          "Managerial", "Executive")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Group/Local Development Corporations")
+
+slices <- c(oper_len[4], admin_cler_len[4], techn_eng_len[4], prof_len[4], manag_len[4], exe_len[4])
+lbls <- c("Operational", "Administrative\nand\nClerical", "Technical\nand\nEngineering", "Professional", 
+          "Managerial", "Executive")
+pie(slices, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Public Sector Group/State Authorities")
 
 # sorted by sector/years 2011-2018
 IDA_year = list()
@@ -127,13 +230,11 @@ X_salary_real_by_str
 X_salary_real = mean(lendmark_data)
 X_salary_real
 
-##PSU na nivou populacije
-#bez ponavljanja
+##Prost slučajan uzorak bez ponavljanja
 n_psu = 400
-salary_psu_wor = sample(lendmark_data, n_psu, replace=F) #bez ponavljanja
+salary_psu_wor = sample(lendmark_data, n_psu, replace=F)
 X_salary_psu_wor = mean(salary_psu_wor)
 X_salary_psu_wor
-# potcenio pravu vrednost
 
 sn2_psu_wor = var(salary_psu_wor)
 D_X_psu_wor = (N_pop-n_psu)*sn2_psu_wor/(N_pop*n_psu)
@@ -157,13 +258,17 @@ D_X_psu_wr = (N_pop-n_psu)*sn2_psu_wr/(N_pop*n_psu)
 D_X_psu_wr
 sqrt(D_X_psu_wr) #bolja ocena wr or wor
 
+I_X_psu_wr_90 = c(X_salary_psu_wr-z*sqrt(D_X_psu_wr), X_salary_psu_wr+z*sqrt(D_X_psu_wr))
+I_X_psu_wr_90
+
 #Nema smisla odredjivati kolicnicku ocenu po godinama, jer nemamo podatke za 
 #iste entitete ali za razlicite godine, u pitanju su razliciti entiteti
 #Mozemo samo gledati godine kao stratume ili grupe ili napraviti viseetapno uzorkovanje na osnovu njih
 
 #Stratifikovano uzorkovanje
 #proporcionalan raspored
-nh_prop = round(n_psu/N_pop * Mi)
+Nh = Mi
+nh_prop = round(n_psu/N_pop * Nh)
 nh_prop
 sum(nh_prop)
 if(sum(nh_prop)!=n_psu) { # ako nije = n
@@ -206,21 +311,22 @@ while(TRUE){
 }
 nh_prop
 sum(nh_prop) == n_psu
+
 uzorak_nh_prop = list()
-for(i in 1:4){
+for(i in 1:h){
   uzorak_nh_prop[[i]] = sample(data_filtered[[i]]$Total.Compensation, nh_prop[i], replace = F)
 }
-length(unlist(uzorak_nh_prop)) #provera
+length(unlist(uzorak_nh_prop)) == n_psu#provera
 
 tn_prop_str = c()
 sn2_prop_str = c()
 si2_str = c()
 Di_x_prop_str = c()
-for(i in 1:4){
-  tn_prop_str[i] = Mi[i]*mean(uzorak_nh_prop[[i]])
+for(i in 1:h){
+  tn_prop_str[i] = Nh[i]*mean(uzorak_nh_prop[[i]])
   sn2_prop_str[i] = var(uzorak_nh_prop[[i]])
   si2_str[i] = var(data_filtered[[i]]$Total.Compensation)
-  Di_x_prop_str[i] = Mi[i]^2 * sn2_prop_str[i] * (1 - nh_prop[i]/Mi[i]) / nh_prop[i]
+  Di_x_prop_str[i] = Nh[i]^2 * sn2_prop_str[i] * (1 - nh_prop[i]/Nh[i]) / nh_prop[i]
 }
 sn2_prop_str
 Di_x_prop_str
@@ -231,8 +337,15 @@ t_prop_str
 X_prop_str = t_prop_str/N_pop
 X_prop_str
 
+#Intervalna ocena
+alpha = 1-0.90
+z = qt(1-alpha/2, sum(n_prop) - h)
+z
+I_str_prop_90 = c(X_prop_str-z*sqrt(D_x_prop_str), X_prop_str+z*sqrt(D_x_prop_str))
+I_str_prop_90
+
 #Nejmanov izbor
-nh_nejman = Mi*sqrt(si2_str)*n_psu/sum(Mi*sqrt(si2_str))
+nh_nejman = Nh*sqrt(si2_str)*n_psu/sum(Nh*sqrt(si2_str))
 nh_nejman = round(nh_nejman)
 nh_nejman
 sum(nh_nejman)
@@ -301,11 +414,19 @@ D_X_nejman_str = sum(Mi^2*sn2_nejman_str*(1-nh_nejman/Mi)/nh_nejman)/(N_pop^2)
 D_X_nejman_str
 sqrt(D_X_nejman_str)
 
+#Intervalna ocena
+alpha = 1-0.90
+z = qt(1-alpha/2, sum(n_nejman) - h)
+z
+I_str_nejman_90 = c(X_nejman_str-z*sqrt(D_X_nejman_str), X_nejman_str+z*sqrt(D_X_nejman_str))
+I_str_nejman_90
+
 #Grupni uzorak
 N_pop
+M = N_pop
 
 #PSU bez ponavljanja
-set.seed(42)
+#set.seed(42)
 h
 n_group = 2
 index_group_wor = sample(h, n_group, replace=F)
@@ -316,14 +437,21 @@ for(i in 1:h){
 ti_group_psu_wor
 t_group_psu_wor = h*mean(ti_group_psu_wor[index_group_wor])
 t_group_psu_wor
-X_group_psu_wor = t_group_psu_wor / N_pop
+X_group_psu_wor = t_group_psu_wor / M
 X_group_psu_wor
 
 D_t_group_psu_wor = (h^2)*(1-n_group/h)*(sum((ti_group_psu_wor[index_group_wor]-sum(ti_group_psu_wor[index_group_wor])/n_group)^2))/(n_group*(n_group-1))
 D_t_group_psu_wor
-D_X_group_psu_wor = D_t_group_psu_wor / (N_pop^2)
+D_X_group_psu_wor = D_t_group_psu_wor / (M^2)
 D_X_group_psu_wor
 sqrt(D_X_group_psu_wor) #???
+
+# Interval poverenja
+alpha = 1-0.90
+z = qnorm(1-alpha/2)
+z
+I_grwor_90 = c(X_group_psu_wor-z*sqrt(D_X_group_psu_wor), X_group_psu_wor+z*sqrt(D_X_group_psu_wor))
+I_grwor_wor_90
 
 # kolicnicke ocene, nije nepristrasna
 b = cor(ti_group_psu_wor[index_group_wor], Mi[index_group_wor])
@@ -333,9 +461,16 @@ R_group_ocena
 
 D_t_R_group_ocena = (h^2)*(1-n_group/h)*sum((ti_group_psu_wor[index_group_wor]-R_group_ocena*Mi[index_group_wor])^2)/(n_group*(n_group-1))
 D_t_R_group_ocena
-D_R_group_ocena = D_t_R_group_ocena / (N_pop^2)
+D_R_group_ocena = D_t_R_group_ocena / (M^2)
 D_R_group_ocena
 sqrt(D_R_group_ocena)
+
+# Interval poverenja
+alpha = 1-0.90
+z = qnorm(1-alpha/2)
+z
+I_grkol_90 = c(R_group_ocena-z*sqrt(D_R_group_ocena), R_group_ocena+z*sqrt(D_R_group_ocena))
+I_grkol_90
 
 #sa nejednakim verovatnocama izbora, sa ponavljanjem HH; sa i bez HT
 n_hh = 2
@@ -354,15 +489,22 @@ ti_group_kol
 Mi
 t_hh = sum(ti_group_kol[index_hh]/pi[index_hh])/n_hh
 t_hh
-X_hh = t_hh / N_pop
+X_hh = t_hh / M
 X_hh
 
 D_t_hh_ocena = sum((ti_group_kol[index_hh]/pi[index_hh] - t_hh)^2) / (n_hh*(n_hh-1))
 D_t_hh_ocena
 
-D_X_hh_ocena = D_t_hh_ocena / (N_pop^2)
+D_X_hh_ocena = D_t_hh_ocena / (M^2)
 D_X_hh_ocena
 sqrt(D_X_hh_ocena)
+
+# Interval poverenja
+alpha = 1-0.90
+z = qnorm(1-alpha/2)
+z
+I_grhh_90 = c(X_hh-z*sqrt(D_X_hh_ocena), X_hh+z*sqrt(D_X_hh_ocena))
+I_grhh_90
 
 #HT ocena
 
@@ -371,7 +513,7 @@ pii
 
 t_ht = sum(ti_group_kol[index_hh]/pii[index_hh])
 t_ht
-X_ht = t_hh / N_pop
+X_ht = t_hh / M
 X_ht
 index_hh #razlicite jedinke, to je ok
 
@@ -386,9 +528,16 @@ for(i in index_hh) {
 }
 D_x_ht_ocena
 N_pop
-D_x_ht_ocena = D_x_ht_ocena/(N_pop^2)
+D_x_ht_ocena = D_x_ht_ocena/(M^2)
 D_x_ht_ocena
 sqrt(D_x_ht_ocena)
+
+# Interval poverenja
+alpha = 1-0.90
+z = qnorm(1-alpha/2)
+z
+I_grht_90 = c(X_ht-z*sqrt(D_x_ht_ocena), X_ht+z*sqrt(D_x_ht_ocena))
+I_grht_90
 
 # Sen-Yates-Grundy ocena
 
@@ -410,7 +559,7 @@ choose(4,2)
 
 Mi
 vca_uzorka = function(i,j) {
-  (Mi[i]/N_pop)*(Mi[j]/(N_pop-Mi[i])) + (Mi[j]/N_pop)*(Mi[i]/(N_pop-Mi[j]))
+  (Mi[i]/M)*(Mi[j]/(M-Mi[i])) + (Mi[j]/M)*(Mi[i]/(M-Mi[j]))
 }
 
 p_uzorka = c()
@@ -452,15 +601,23 @@ for (i in index_syg) {
 }
 
 D_t_ht_ocena_syg
-D_x_ht_ocena_syg = D_t_ht_ocena_syg / ((N_pop^2)*2)
+D_x_ht_ocena_syg = D_t_ht_ocena_syg / ((M^2)*2)
 D_x_ht_ocena_syg
 sqrt(D_x_ht_ocena_syg)
+
+# Interval poverenja
+alpha = 1-0.90
+z = qnorm(1-alpha/2)
+z
+I_grht_90 = c(X_syg-z*sqrt(D_x_ht_ocena_syg), X_syg+z*sqrt(D_x_ht_ocena_syg))
+I_grht_90
+
 
 ##viseetapni
 M = N_pop
 
 #PSU bez ponavljanja
-set.seed(42)
+#set.seed(42)
 #uzimamo odozgo primarne jedinice, iz grupnog uzorka
 
 sekundarne = list()
@@ -495,6 +652,13 @@ D_X_mgroup_psu_wor = D_t_group_psu_wor / (M^2)
 D_X_mgroup_psu_wor
 sqrt(D_X_mgroup_psu_wor)
 
+#Intervalna ocena
+alpha = 1-0.90
+z = qt(1-alpha/2, sum(n_prop) - h)
+z
+I_multiwor_90 = c(X_mgroup_psu_wor-z*sqrt(D_X_mgroup_psu_wor), X_mgroup_psu_wor+z*sqrt(D_X_mgroup_psu_wor))
+I_multiwor_90
+
 #kolicinska ocena
 b_m = cor(ti_mgroup_psu_wor, Mi_mgroup)
 b_m #1
@@ -507,7 +671,12 @@ D_X_R_mgroup_psu_wor = D_t_R_mgroup_psu_wor / (M^2)
 D_X_R_mgroup_psu_wor
 sqrt(D_X_R_mgroup_psu_wor)
 
-#izvrsiti viseetapno, sa tercijarnim jedinicama ???
+#Intervalna ocena
+alpha = 1-0.90
+z = qt(1-alpha/2, sum(n_prop) - h)
+z
+I_multikol_90 = c(R_mgroup_ocena-z*sqrt(D_X_R_mgroup_psu_wor), R_mgroup_ocena+z*sqrt(D_X_R_mgroup_psu_wor))
+I_multikol_90
 
 ############################################## REZULTATI #######################################################
 #REAL
@@ -556,37 +725,42 @@ R_mgroup_ocena
 D_X_R_mgroup_psu_wor
 
 ########################### PLOTOVI ##########################################
-disperzije = c(D_X_psu_wor, D_X_psu_wr, D_x_prop_str, D_X_nejman_str, 
-               D_R_group_ocena, D_X_hh_ocena, D_x_ht_ocena_syg, D_X_R_mgroup_psu_wor)
-disperzije
-disperzije = sqrt(disperzije)
+
+############## GRAFIK 1 #####################
+x1 =  c("SRSWOR", "SRSWR", 
+        "StrProp", "StrNeyman", 
+        "GrSRSWOR", 
+        "GrKolic", "GrHH", "GrHT", "GrSYG",
+        "MultiSRSWOR", "MultiKolic")
 
 disperzije1 = c(D_X_psu_wor, D_X_psu_wr, D_x_prop_str, D_X_nejman_str, 
                 D_X_group_psu_wor, D_R_group_ocena, D_X_hh_ocena, D_x_ht_ocena, 
                 D_x_ht_ocena_syg,D_X_mgroup_psu_wor, D_X_R_mgroup_psu_wor)
-
-disperzije2 = c(D_R_group_ocena, D_x_ht_ocena_syg)
-
-
-x = c("psu_wor", "psu_wr", 
-      "str_prop_wor", "str_nejman_wor", 
-      "R_group_psu_wor", "hh", "ht_syg_wor",
-      "R_mgroup_psu_wor")
-y = disperzije
-y
-dotplot(y~x, main="Poređenje vrednosti disperzija",
-        xlab="Vrsta uzorkovanja i ocene", ylab="Vrednost disperzije")
-
-x1 =  c("psu_wor", "psu_wr", 
-        "str_prop_wor", "str_nejman_wor", 
-        "group_psu_wor", 
-        "R_group_psu_wor", "hh_wr", "ht_wr", "ht_syg_wor",
-        "mgroup_psu_wor", "R_mgroup_psu_wor")
 y1 = disperzije1
-x2 = c("R_group_psu_wor", "ht_syg_wor")
-y2 = disperzije2
 
-dotplot(sqrt(y1)~x1, main="Poređenje vrednosti disperzija",
-        xlab="Vrsta uzorkovanja i ocene", ylab="Vrednost disperzije")
-dotplot(sqrt(y2)~x2,  main="Poređenje vrednosti disperzija",
-        xlab="Vrsta uzorkovanja i ocene", ylab="Vrednost disperzije")
+dotplot(sqrt(y1)~x1, main="Poređenje vrednosti standardnih grešaka ocena",
+        xlab="Metoda uzorkovanja i tehnika ocenjivanja", ylab="Vrednost standardne greške ocene")
+
+############## GRAFIK 2 #####################
+x2 = c("SRSWOR", "SRSWR", 
+      "StrProp", "StrNeyman", 
+      "GrKolic", "GrHH", "GrSYG",
+      "MultiKolic")
+
+disperzije2 = c(D_X_psu_wor, D_X_psu_wr, D_x_prop_str, D_X_nejman_str, 
+               D_R_group_ocena, D_X_hh_ocena, D_x_ht_ocena_syg, D_X_R_mgroup_psu_wor)
+disperzije2
+
+y2 = disperzije2
+y2
+dotplot(sqrt(y2)~x2, main="Poređenje vrednosti standardnih grešaka ocena",
+        xlab="Metoda uzorkovanja i tehnika ocenjivanja", ylab="Vrednost standardne greške ocene")
+
+############## GRAFIK 3 #####################
+x3 = c("GrKolic", "GrSYG")
+
+disperzije3 = c(D_R_group_ocena, D_x_ht_ocena_syg)
+y3 = disperzije3
+dotplot(sqrt(y3)~x3,  main="Poređenje vrednosti standardnih grešaka ocena",
+        xlab="Metoda uzorkovanja i tehnika ocenjivanja", ylab="Vrednost standardne greške ocene")
+
